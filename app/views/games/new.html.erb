@@ -1,0 +1,16 @@
+<h1>New Game</h1>
+
+<ul id="letter-grid">
+  <% @grid.each do |letter| %>
+    <div class="letter-box"><li><%= letter %></li></div>
+  <% end %>
+</ul>
+
+<p>Please enter your longest word:</p>
+
+<form action="/score" method="post">
+  <input type="text" name="word">
+  <input type="submit" value="Play">
+  <input name="grid" type="hidden" value="<% @grid %>">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+</form>
