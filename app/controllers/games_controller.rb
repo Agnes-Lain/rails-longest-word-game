@@ -15,7 +15,10 @@ class GamesController < ApplicationController
 
   def score
     @word = params[:word]
-    @score = run_game(@word, @grid)
+    @grid = params[:grid]
+    result = run_game(@word, @grid)
+    @message = result[:message]
+    @score = result[:score]
   end
 
   private
@@ -27,14 +30,14 @@ class GamesController < ApplicationController
     check = open(url).read
     if word_checking?(attempt, grid)
       if JSON.parse(check)["found"]
-        result[:message] = "well done"
+        result[:message] = "Congratulations! #{attempt.upcase} is a valid English word!"
         result[:score] = ((attempt.length.to_f / grid.length.to_f)*10).round(2)
       else
-        result[:message] = "not an english word"
+        result[:message] = "Sorry, but #{attempt.upcase} dose not seem to be a valid english word"
         result[:score] = 0
       end
     else
-      result[:message] = "not in the grid"
+      result[:message] = "Sorry, but #{attempt.upcase} can't be built out of #{grid}"
       result[:score] = 0
     end
     result
@@ -42,7 +45,7 @@ class GamesController < ApplicationController
 
   def word_checking?(attempt, grid)
     attempt_h = array_to_hash(attempt.upcase.split(""))
-    grid_h = array_to_hash(grid)
+    grid_h = array_to_hash(grid.split)
     if (attempt_h.keys - grid_h.keys).empty?
       attempt_h.all? do |k, v|
         v <= grid_h[k]
